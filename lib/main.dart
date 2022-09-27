@@ -36,6 +36,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _currentSortColumn = 0;
+  bool _isSortAsc = true;
   late List<Customer> _customers;
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
@@ -141,7 +143,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kindacode.com'),
+        title: const Text('Gestio'),
       ),
       body: SafeArea(
         child: Center(
@@ -156,11 +158,39 @@ class _HomePageState extends State<HomePage> {
                   return Text('Error!');
                 } else {
                   var customers = snapshot.data?.toList();
-                  return ListView.builder(itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(customers![index].firstname ?? ""),
-                    );
-                  });
+                  if (customers != null && customers.isNotEmpty) {
+                    return DataTable(
+                        sortColumnIndex: _currentSortColumn,
+                        sortAscending: _isSortAsc,
+                        columns: [
+                          DataColumn(
+                            label: Text('Firstname'),
+                            onSort: (columnIndex, _) {
+                              setState(() {
+                                _currentSortColumn = columnIndex;
+                                if (_isSortAsc) {
+                                  customers.sort((a, b) =>
+                                      b.firstname.compareTo(a.firstname));
+                                } else {
+                                  customers.sort((a, b) =>
+                                      a.firstname.compareTo(b.firstname));
+                                }
+                                _isSortAsc = !_isSortAsc;
+                              });
+                            },
+                          ),
+                          DataColumn(label: Text('Lastname')),
+                          DataColumn(label: Text('Address')),
+                        ],
+                        rows: customers
+                            .map((customer) => DataRow(cells: [
+                                  DataCell(Text(customer.firstname)),
+                                  DataCell(Text(customer.lastname)),
+                                  DataCell(Text(customer.address)),
+                                ]))
+                            .toList());
+                  }
+                  return Text('no data');
                 }
               }),
         ),
@@ -180,7 +210,7 @@ late LogMessageRepository _logMessageRepository;
 Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  _database = CblHelper().getHelper();
+  _database = (await CblHelper().getHelper())!;
   _customerRepository = CustomerRepository(_database);
   _logMessageRepository = LogMessageRepository(_database);
 }
