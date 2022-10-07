@@ -1,3 +1,5 @@
+import '../machine/Machine.dart';
+
 abstract class CustomerAbstract {
   String get id;
   DateTime get createdAt;
@@ -5,4 +7,5 @@ abstract class CustomerAbstract {
   String get lastname;
   String get address;
   String? get email;
+  List<Machine>? get machines;
 }

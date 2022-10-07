@@ -1,6 +1,7 @@
 import 'package:cbl/cbl.dart';
 import 'package:gestio/customer/CustomerAbstract.dart';
 import 'package:gestio/db/ExtensionDictionary.dart';
+import 'package:gestio/machine/Machine.dart';
 
 class Customer extends CustomerAbstract {
   final DictionaryInterface dict;
@@ -22,4 +23,7 @@ class Customer extends CustomerAbstract {
 
   @override
   String? get email => dict.value('email');
+
+  @override
+  List<Machine>? get machines => dict.value('machines');
 }
