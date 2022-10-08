@@ -6,6 +6,6 @@ abstract class CustomerAbstract {
   String get firstname;
   String get lastname;
   String get address;
+  String? get phone;
   String? get email;
-  List<Machine>? get machines;
 }

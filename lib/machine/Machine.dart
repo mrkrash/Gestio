@@ -22,16 +22,17 @@ class Machine extends MachineAbstract {
   String? get registeredCode => dict.value('registeredCode');
 
   @override
-  String get type => dict.value('type')!;
+  String get model => dict.value('model')!;
 
   @override
   List<DateTime>? get deadlines => dict.value('deadlines');
 
   @override
-  // TODO: implement deadline
   DateTime? get deadline => dict.value('deadline');
 
   @override
-  // TODO: implement marks
   List<DateTime>? get marks => dict.value('marks');
+
+  @override
+  String get owner => dict.value('owner')!;
 }

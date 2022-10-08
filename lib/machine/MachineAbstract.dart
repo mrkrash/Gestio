@@ -1,7 +1,8 @@
 abstract class MachineAbstract {
   String get id;
   DateTime get createdAt;
-  String get type;
+  String get owner;
+  String get model;
   String get fluel;
   String? get number;
   String? get registeredCode;

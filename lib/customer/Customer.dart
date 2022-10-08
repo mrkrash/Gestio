@@ -25,5 +25,5 @@ class Customer extends CustomerAbstract {
   String? get email => dict.value('email');
 
   @override
-  List<Machine>? get machines => dict.value('machines');
+  String? get phone => dict.value('phone');
 }

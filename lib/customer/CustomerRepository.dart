@@ -1,16 +1,13 @@
 import 'package:cbl/cbl.dart';
 import 'package:gestio/customer/Customer.dart';
 
-import '../machine/Machine.dart';
-import 'CustomerAbstract.dart';
-
 class CustomerRepository {
   final Database _database;
 
   CustomerRepository(this._database);
 
   Future<Customer> createCustomer(
-      String firstname, String lastname, String address, String? email, List<Machine>? machines) async {
+      String firstname, String lastname, String address, String? email) async {
     final document = MutableDocument({
       'type': 'customer',
       'createdAt': DateTime.now(),
@@ -18,9 +15,7 @@ class CustomerRepository {
       'lastname': lastname,
       'address': address,
       'email': email,
-      'machines' : machines,
     });
-    print(document);
     await _database.saveDocument(document);
     return Customer(document);
   }
