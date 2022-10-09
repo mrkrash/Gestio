@@ -56,8 +56,7 @@ class _HomePageState extends State<HomePage> {
     //   _phoneController.text = existingCustomer.phone ?? '';
     // }
 
-    final EngagementRepository engagementRepository = EngagementRepository();
-    engagementRepository.allDocumentStream(new DateTime(2020), new DateTime(2023));
+
 
     _machineRepository = MachineRepository(DatabaseHelper.instance.database!);
 
@@ -287,6 +286,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final EngagementRepository engagementRepository = EngagementRepository();
     _customerRepository = CustomerRepository(DatabaseHelper.instance.database!);
     return Scaffold(
       appBar: AppBar(
@@ -295,51 +295,65 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Container(
           width: double.infinity,
-          child: StreamBuilder(
-              stream: _customerRepository.allCustomerStream(),
+          child: FutureBuilder(
+              future: engagementRepository.allDocumentStream(
+                  new DateTime(2020),
+                  new DateTime(2023)
+              ),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
-                } else if (snapshot.connectionState == ConnectionState.done) {
-                  return Text('done');
                 } else if (snapshot.hasError) {
                   return Text('Error!');
-                } else {
-                  var customers = snapshot.data?.toList();
-                  if (customers != null && customers.isNotEmpty) {
-                    return DataTable(
-                        sortColumnIndex: _currentSortColumn,
-                        sortAscending: _isSortAsc,
-                        columns: [
-                          DataColumn(
-                            label: Text('Firstname'),
-                            onSort: (columnIndex, _) {
-                              setState(() {
-                                _currentSortColumn = columnIndex;
-                                if (_isSortAsc) {
-                                  customers.sort((a, b) =>
-                                      b.firstname.compareTo(a.firstname));
-                                } else {
-                                  customers.sort((a, b) =>
-                                      a.firstname.compareTo(b.firstname));
-                                }
-                                _isSortAsc = !_isSortAsc;
-                              });
-                            },
-                          ),
-                          DataColumn(label: Text('Lastname')),
-                          DataColumn(label: Text('Address')),
-                        ],
-                        rows: customers
-                            .map((customer) => DataRow(cells: [
-                          DataCell(Text(customer.firstname)),
-                          DataCell(Text(customer.lastname)),
-                          DataCell(Text(customer.address)),
-                        ]))
-                            .toList());
-                  }
-                  return Text('no data');
+                } else if (snapshot.connectionState == ConnectionState.done) {
+                  return StreamBuilder(
+                    stream: snapshot.data,
+                    builder: (context, snapshot) {
+                      var customers = snapshot.data;
+                      if (customers != null && customers.isNotEmpty) {
+                        return DataTable(
+                            sortColumnIndex: _currentSortColumn,
+                            sortAscending: _isSortAsc,
+                            columns: [
+                              DataColumn(label: Text('Owner')),
+                              DataColumn(label: Text('Address')),
+                              DataColumn(label: Text('Model')),
+                              DataColumn(label: Text('Number')),
+                              DataColumn(label: Text('Registered Code')),
+                              DataColumn(label: Text('Last Mark')),
+                              DataColumn(label: Text('Last Deadline')),
+                              DataColumn(label: Text('Deadline')),
+                            ],
+                            rows: customers
+                                .map((customer) => DataRow(cells: [
+                              DataCell(Text(customer.owner)),
+                              DataCell(Text(customer.address)),
+                              DataCell(Text(customer.model)),
+                              DataCell(Text(customer.number)),
+                              DataCell(Text(customer.registeredCode)),
+                              DataCell(Text(
+                                  customer.lastMark != null ?
+                                  DateFormat('dd/MM/yyyy').format(customer.lastMark!) :
+                                  ''
+                              )),
+                              DataCell(Text(
+                                  customer.lastDeadline != null ?
+                                  DateFormat('dd/MM/yyyy').format(customer.lastDeadline!) :
+                                  ''
+                              )),
+                              DataCell(Text(
+                                  customer.deadline != null ?
+                                  DateFormat('dd/MM/yyyy').format(customer.deadline!) :
+                                  ''
+                              )),
+                            ]))
+                                .toList());
+                      }
+                      return Text('no data');
+                    }
+                  );
                 }
+                return Text('no data');
               }),
         ),
       ),

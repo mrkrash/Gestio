@@ -46,6 +46,8 @@ class EngagementRepository {
     return query.changes().asyncMap(
             (change) => change.results.asStream().map(
                 (result) => Engagement(MutableDocument({
+                  'owner': result.string('firstname')! + ' ' + result.string('lastname')!,
+                  'address': result.string('address'),
                   'model': result.string('model'),
                   'number': result.string('number'),
                   'registeredCode': result.string('registeredCode'),
