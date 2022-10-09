@@ -7,6 +7,6 @@ abstract class MachineAbstract {
   String? get number;
   String? get registeredCode;
   DateTime? get deadline;
-  List<DateTime>? get deadlines;
-  List<DateTime>? get marks;
+  DateTime? get lastDeadline;
+  DateTime? get lastMark;
 }

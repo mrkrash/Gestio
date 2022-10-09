@@ -1,5 +1,5 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/machine/MachineAbstract.dart';
+import 'package:gestio/document/machine/MachineAbstract.dart';
 import 'package:gestio/db/ExtensionDictionary.dart';
 
 class Machine extends MachineAbstract {
@@ -25,13 +25,13 @@ class Machine extends MachineAbstract {
   String get model => dict.value('model')!;
 
   @override
-  List<DateTime>? get deadlines => dict.value('deadlines');
+  DateTime? get lastDeadline => dict.value('lastDeadline');
 
   @override
   DateTime? get deadline => dict.value('deadline');
 
   @override
-  List<DateTime>? get marks => dict.value('marks');
+  DateTime? get lastMark => dict.value('lastMark');
 
   @override
   String get owner => dict.value('owner')!;

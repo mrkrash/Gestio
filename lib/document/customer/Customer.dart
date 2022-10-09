@@ -1,7 +1,6 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/customer/CustomerAbstract.dart';
 import 'package:gestio/db/ExtensionDictionary.dart';
-import 'package:gestio/machine/Machine.dart';
+import 'package:gestio/document/customer/CustomerAbstract.dart';
 
 class Customer extends CustomerAbstract {
   final DictionaryInterface dict;

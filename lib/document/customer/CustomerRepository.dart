@@ -1,5 +1,5 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/customer/Customer.dart';
+import 'package:gestio/document/customer/Customer.dart';
 
 class CustomerRepository {
   final Database _database;
@@ -7,28 +7,28 @@ class CustomerRepository {
   CustomerRepository(this._database);
 
   Future<Customer> createCustomer(
-      String firstname, String lastname, String address, String? email) async {
+      String firstname, String lastname, String address, String? phone) async {
     final document = MutableDocument({
       'type': 'customer',
       'createdAt': DateTime.now(),
       'firstname': firstname,
       'lastname': lastname,
       'address': address,
-      'email': email,
+      'phone': phone,
     });
     await _database.saveDocument(document);
     return Customer(document);
   }
 
   Future<bool> updateCustomer(String id, String firstname, String lastname,
-      String address, String? email) async {
+      String address, String? phone) async {
     final doc = await _database.document(id);
     final mutableDoc = doc!.toMutable();
 
     mutableDoc.setValue(firstname, key: 'firstname');
     mutableDoc.setValue(lastname, key: 'lastname');
     mutableDoc.setValue(address, key: 'address');
-    mutableDoc.setValue(email, key: 'email');
+    mutableDoc.setValue(phone, key: 'phone');
     return await _database.saveDocument(mutableDoc);
   }
 
@@ -45,7 +45,7 @@ class CustomerRepository {
           SelectResult.property('firstname'),
           SelectResult.property('lastname'),
           SelectResult.property('address'),
-          SelectResult.property('email'),
+          SelectResult.property('phone'),
         )
         .from(DataSource.database(_database))
         .where(
