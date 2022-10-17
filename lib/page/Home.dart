@@ -1,4 +1,3 @@
-import 'package:cbl/cbl.dart';
 import 'package:flutter/material.dart';
 import 'package:gestio/document/EngagementRepository.dart';
 import 'package:gestio/document/machine/MachineRepository.dart';
@@ -7,6 +6,9 @@ import 'package:gestio/document/customer/CustomerRepository.dart';
 import 'package:gestio/db/DatabaseHelper.dart';
 import 'package:gestio/document/machine/Machine.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog_2/month_picker_dialog_2.dart';
+
+import '../document/Engagement.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,6 +25,8 @@ class _HomePageState extends State<HomePage> {
   late CustomerRepository _customerRepository;
   late MachineRepository _machineRepository;
 
+  final EngagementRepository engagementRepository = EngagementRepository();
+
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -37,9 +41,12 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _lastMarkController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
 
+  DateTime? _selectedMonth = null;
   DateTime? _lastDeadline = null;
   DateTime? _lastMark = null;
   DateTime? _deadline = null;
+
+  Future<Stream<List<Engagement>>>? _documents;
 
   // This function will be triggered when the floating button is pressed
   // It will also be triggered when you want to update an item
@@ -55,8 +62,6 @@ class _HomePageState extends State<HomePage> {
     //   _addressController.text = existingCustomer.address;
     //   _phoneController.text = existingCustomer.phone ?? '';
     // }
-
-
 
     _machineRepository = MachineRepository(DatabaseHelper.instance.database!);
 
@@ -285,21 +290,46 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    _documents = engagementRepository.allDocumentStream(
+        new DateTime(2020),
+        new DateTime(2023)
+    );
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    final EngagementRepository engagementRepository = EngagementRepository();
+
     _customerRepository = CustomerRepository(DatabaseHelper.instance.database!);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestio'),
+        actions: [
+          IconButton(onPressed: () async {
+            _selectedMonth = await showMonthPicker(
+                context: context,
+                firstDate: DateTime(DateTime.now().year - 1, 5),
+                lastDate: DateTime(DateTime.now().year + 1, 9),
+                initialDate: _selectedMonth ?? DateTime.now(),
+            );
+            if (_selectedMonth != null) {
+              var lastDayDateTime = (_selectedMonth!.month < 12) ? new DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0) : new DateTime(_selectedMonth!.year + 1, 1, 0);
+              setState(() {
+                _documents = engagementRepository.allDocumentStream(
+                    _selectedMonth!,
+                    lastDayDateTime
+                );
+              });
+            }
+          }, icon: const Icon(Icons.calendar_month))
+        ],
       ),
       body: SafeArea(
         child: Container(
           width: double.infinity,
           child: FutureBuilder(
-              future: engagementRepository.allDocumentStream(
-                  new DateTime(2020),
-                  new DateTime(2023)
-              ),
+              future: _documents,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
