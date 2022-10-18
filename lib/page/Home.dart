@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:gestio/db/DatabaseHelper.dart';
 import 'package:gestio/document/EngagementRepository.dart';
 import 'package:gestio/document/machine/MachineRepository.dart';
 import 'package:gestio/document/customer/Customer.dart';
 import 'package:gestio/document/customer/CustomerRepository.dart';
-import 'package:gestio/db/DatabaseHelper.dart';
+import 'package:gestio/document/Engagement.dart';
 import 'package:gestio/document/machine/Machine.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog_2/month_picker_dialog_2.dart';
-
-import '../document/Engagement.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -50,18 +49,23 @@ class _HomePageState extends State<HomePage> {
 
   // This function will be triggered when the floating button is pressed
   // It will also be triggered when you want to update an item
-  void _showForm(String? id) async {
-    // if (id != null) {
-    //   // id == null -> create new item
-    //   // id != null -> update an existing item
-    //   final existingMachine = _machines.firstWhere((element) => element.id == id);
-    //   final existingCustomer =
-    //   _customers.firstWhere((element) => element.id == id);
-    //   _firstnameController.text = existingCustomer.firstname;
-    //   _lastnameController.text = existingCustomer.lastname;
-    //   _addressController.text = existingCustomer.address;
-    //   _phoneController.text = existingCustomer.phone ?? '';
-    // }
+  void _showForm(Engagement? engagement) async {
+    if (engagement != null) {
+         _firstnameController.text = engagement.firstname;
+         _lastnameController.text = engagement.lastname;
+         _addressController.text = engagement.address;
+         _phoneController.text = engagement.phone ?? '';
+         _modelController.text = engagement.model;
+         _fluelController.text = engagement.fluel;
+         _numberController.text = engagement.number;
+         _registeredCodeController.text = engagement.registeredCode;
+         _lastDeadlineController.text = engagement.lastDeadline != null
+             ? DateFormat('dd/MM/yyyy').format(engagement.lastDeadline!) : '';
+         _lastMarkController.text = engagement.lastMark != null
+             ? DateFormat('dd/MM/yyyy').format(engagement.lastMark!) : '';
+         _deadlineController.text = DateFormat('dd/MM/yyyy')
+             .format(engagement.deadline!);
+    }
 
     _machineRepository = MachineRepository(DatabaseHelper.instance.database!);
 
@@ -234,12 +238,12 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton(
                 onPressed: () async {
                   // Save new journal
-                  if (id == null) {
+                  if (engagement == null) {
                     await _addItem();
                   }
 
-                  if (id != null) {
-                    await _updateItem(id);
+                  if (engagement != null) {
+                    await _updateItem(engagement);
                   }
 
                   // Clear the text fields
@@ -261,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                   // Close the bottom sheet
                   Navigator.of(context).pop();
                 },
-                child: Text(id == null ? 'Create New' : 'Update'),
+                child: Text(engagement?.id == null ? 'Create New' : 'Update'),
               )
             ],
           ),
@@ -277,9 +281,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _updateItem(String id) async {
-    await _customerRepository.updateCustomer(id, _firstnameController.text,
-        _lastnameController.text, _addressController.text, null);
+  Future<void> _updateItem(Engagement engagement) async {
+    _customerRepository.ciao(engagement);
+    await _customerRepository.updateCustomer(engagement.ownerID, _firstnameController.text,
+        _lastnameController.text, _addressController.text, _phoneController.text);
+    await _machineRepository.updateMachine(engagement.id, engagement.ownerID,
+        engagement.model, engagement.fluel, engagement.number,
+        engagement.registeredCode, engagement.lastMark,
+        engagement.lastDeadline, engagement.deadline);
   }
 
   void _deleteItem(String id) async {
@@ -291,10 +300,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _documents = engagementRepository.allDocumentStream(
-        new DateTime(2020),
-        new DateTime(2023)
+        DateTime(2020),
+        DateTime(2023)
     );
     super.initState();
   }
@@ -353,6 +361,7 @@ class _HomePageState extends State<HomePage> {
                               DataColumn(label: Text('Last Mark')),
                               DataColumn(label: Text('Last Deadline')),
                               DataColumn(label: Text('Deadline')),
+                              DataColumn(label: Text('Actions')),
                             ],
                             rows: customers
                                 .map((customer) => DataRow(cells: [
@@ -375,6 +384,10 @@ class _HomePageState extends State<HomePage> {
                                   customer.deadline != null ?
                                   DateFormat('dd/MM/yyyy').format(customer.deadline!) :
                                   ''
+                              )),
+                              DataCell(IconButton(
+                                onPressed: () => _showForm(customer),
+                                icon: Icon(Icons.edit),
                               )),
                             ]))
                                 .toList());

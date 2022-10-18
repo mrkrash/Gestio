@@ -1,4 +1,5 @@
 import 'package:cbl/cbl.dart';
+import 'package:gestio/document/Engagement.dart';
 import 'package:gestio/document/customer/Customer.dart';
 
 class CustomerRepository {
@@ -58,5 +59,20 @@ class CustomerRepository {
     return query.changes().asyncMap(
           (change) => change.results.asStream().map(Customer.new).toList(),
         );
+  }
+
+  ciao(Engagement engagement) async {
+    final query = const QueryBuilder().select(
+      SelectResult.expression(Meta.id),
+      SelectResult.property('type'),
+    ).from(DataSource.database(_database)).where(
+      Expression.property('type').equalTo(Expression.value('machine')),
+    );
+
+    var aa = await query.execute();
+    var bb = aa.allResults();
+    print(engagement.id);
+    print(aa);
+    print(bb);
   }
 }

@@ -1,9 +1,8 @@
 import 'package:cbl/cbl.dart';
+import 'package:gestio/db/DatabaseHelper.dart';
 import 'package:gestio/document/Engagement.dart';
 import 'package:gestio/document/customer/CustomerRepository.dart';
 import 'package:gestio/document/machine/MachineRepository.dart';
-
-import '../db/DatabaseHelper.dart';
 
 class EngagementRepository {
   late final CustomerRepository _customerRepository;
@@ -27,6 +26,7 @@ class EngagementRepository {
         customer.address AS address,
         customer.phone AS phone,
         _.model AS model,
+        _.fluel AS fluel,
         _.number AS number,
         _.registeredCode AS registeredCode,
         _.lastMark AS lastMark,
@@ -46,9 +46,15 @@ class EngagementRepository {
     return query.changes().asyncMap(
             (change) => change.results.asStream().map(
                 (result) => Engagement(MutableDocument({
-                  'owner': result.string('firstname')! + ' ' + result.string('lastname')!,
+                  'id': result.string('id'),
+                  'ownerID': result.string('ownerID'),
+                  'firstname': result.string('firstname'),
+                  'lastname': result.string('lastname'),
+                  'owner': '${result.string('firstname')!} ${result.string('lastname')!}',
                   'address': result.string('address'),
+                  'phone': result.string('phone'),
                   'model': result.string('model'),
+                  'fluel': result.string('fluel'),
                   'number': result.string('number'),
                   'registeredCode': result.string('registeredCode'),
                   'deadline': result.string('deadline'),
