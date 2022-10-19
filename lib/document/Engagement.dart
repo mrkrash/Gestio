@@ -1,5 +1,4 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/db/ExtensionDictionary.dart';
 import 'package:gestio/document/EngagementAbstract.dart';
 
 class Engagement extends EngagementAbstract {
@@ -7,7 +6,7 @@ class Engagement extends EngagementAbstract {
   Engagement(this.dict);
 
   @override
-  String get id => dict.documentId;
+  String get id => dict.value('id')!;
 
   @override
   String get ownerID => dict.value('ownerID')!;

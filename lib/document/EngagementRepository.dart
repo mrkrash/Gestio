@@ -38,11 +38,6 @@ class EngagementRepository {
       '''
     );
 
-    Future(query.explain).then(print);
-    final resultSet = await query.execute();
-
-    print(resultSet);
-
     return query.changes().asyncMap(
             (change) => change.results.asStream().map(
                 (result) => Engagement(MutableDocument({

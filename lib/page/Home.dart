@@ -59,10 +59,13 @@ class _HomePageState extends State<HomePage> {
          _fluelController.text = engagement.fluel;
          _numberController.text = engagement.number;
          _registeredCodeController.text = engagement.registeredCode;
+         _lastDeadline = engagement.lastDeadline;
          _lastDeadlineController.text = engagement.lastDeadline != null
              ? DateFormat('dd/MM/yyyy').format(engagement.lastDeadline!) : '';
+         _lastMark = engagement.lastMark;
          _lastMarkController.text = engagement.lastMark != null
              ? DateFormat('dd/MM/yyyy').format(engagement.lastMark!) : '';
+         _deadline = engagement.deadline;
          _deadlineController.text = DateFormat('dd/MM/yyyy')
              .format(engagement.deadline!);
     }
@@ -282,13 +285,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _updateItem(Engagement engagement) async {
-    _customerRepository.ciao(engagement);
     await _customerRepository.updateCustomer(engagement.ownerID, _firstnameController.text,
         _lastnameController.text, _addressController.text, _phoneController.text);
     await _machineRepository.updateMachine(engagement.id, engagement.ownerID,
-        engagement.model, engagement.fluel, engagement.number,
-        engagement.registeredCode, engagement.lastMark,
-        engagement.lastDeadline, engagement.deadline);
+        _modelController.text, _fluelController.text, _numberController.text,
+        _registeredCodeController.text, _lastMark, _lastDeadline, _deadline);
   }
 
   void _deleteItem(String id) async {
