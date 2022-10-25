@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gestio/db/DatabaseHelper.dart';
-import 'package:gestio/log/LogMessageRepository.dart';
 import 'package:gestio/page/Home.dart';
 
 Future<void> main() async {
@@ -26,6 +27,15 @@ class MyApp extends StatelessWidget {
         // Remove the debug banner
         debugShowCheckedModeBanner: false,
         title: 'Gestio',
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate
+        ],
+        supportedLocales: const [
+          Locale('en', ''),
+          Locale('it', '')
+        ],
         theme: ThemeData(
           primarySwatch: Colors.orange,
         ),
