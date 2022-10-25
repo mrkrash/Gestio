@@ -53,8 +53,8 @@ class EngagementRepository {
                   'number': result.string('number'),
                   'registeredCode': result.string('registeredCode'),
                   'deadline': result.string('deadline'),
-                  'lastDeadline': result.array('deadlines')?.last.toString(),
-                  'lastMark': result.array('marks')?.last.toString(),
+                  'lastDeadline': result.string('lastDeadline'),
+                  'lastMark': result.string('lastMark'),
                 }))
             ).toList(),
     );
