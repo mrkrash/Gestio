@@ -5,9 +5,9 @@ import 'package:gestio/document/machine/MachineRepository.dart';
 import 'package:gestio/document/customer/Customer.dart';
 import 'package:gestio/document/customer/CustomerRepository.dart';
 import 'package:gestio/document/Engagement.dart';
-import 'package:gestio/document/machine/Machine.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog_2/month_picker_dialog_2.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,8 +19,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentSortColumn = 0;
   bool _isSortAsc = true;
-  late List<Machine> _machines;
 
+  late AppLocalizations t;
   late CustomerRepository _customerRepository;
   late MachineRepository _machineRepository;
 
@@ -40,10 +40,12 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _lastMarkController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
 
-  DateTime? _selectedMonth = null;
-  DateTime? _lastDeadline = null;
-  DateTime? _lastMark = null;
-  DateTime? _deadline = null;
+  final TextEditingController _searchController = TextEditingController();
+
+  DateTime? _selectedMonth;
+  DateTime? _lastDeadline;
+  DateTime? _lastMark;
+  DateTime? _deadline;
 
   Future<Stream<List<Engagement>>>? _documents;
 
@@ -67,7 +69,7 @@ class _HomePageState extends State<HomePage> {
              ? DateFormat('dd/MM/yyyy').format(engagement.lastMark!) : '';
          _deadline = engagement.deadline;
          _deadlineController.text = DateFormat('dd/MM/yyyy')
-             .format(engagement.deadline!);
+             .format(engagement.deadline);
     }
 
     _machineRepository = MachineRepository(DatabaseHelper.instance.database!);
@@ -93,14 +95,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Flexible(child: TextField(
                     controller: _firstnameController,
-                    decoration: const InputDecoration(hintText: 'Firstname'),
+                    decoration: InputDecoration(hintText: t.firstname),
                   )),
                   const SizedBox(
                     width: 10,
                   ),
                   Flexible(child: TextField(
                     controller: _lastnameController,
-                    decoration: const InputDecoration(hintText: 'Lastname'),
+                    decoration: InputDecoration(hintText: t.lastname),
                   ))
                 ],
               ),
@@ -112,14 +114,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Flexible(child: TextField(
                     controller: _addressController,
-                    decoration: const InputDecoration(hintText: 'Address'),
+                    decoration: InputDecoration(hintText: t.address),
                   )),
                   const SizedBox(
                     width: 10,
                   ),
                   Flexible(child: TextField(
                     controller: _phoneController,
-                    decoration: const InputDecoration(hintText: 'Phone'),
+                    decoration: InputDecoration(hintText: t.phone),
                   ))
                 ],
               ),
@@ -131,14 +133,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Flexible(child: TextField(
                     controller: _modelController,
-                    decoration: const InputDecoration(hintText: 'Model'),
+                    decoration: InputDecoration(hintText: t.model),
                   )),
                   const SizedBox(
                     width: 10,
                   ),
                   Flexible(child: TextField(
                     controller: _fluelController,
-                    decoration: const InputDecoration(hintText: 'Fluel'),
+                    decoration: InputDecoration(hintText: t.fluel),
                   ))
                 ],
               ),
@@ -150,14 +152,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Flexible(child: TextField(
                     controller: _numberController,
-                    decoration: const InputDecoration(hintText: 'Number'),
+                    decoration: InputDecoration(hintText: t.number),
                   )),
                   const SizedBox(
                     width: 10,
                   ),
                   Flexible(child: TextField(
                     controller: _registeredCodeController,
-                    decoration: const InputDecoration(hintText: 'RegisteredCode'),
+                    decoration: InputDecoration(hintText: t.registeredCode),
                   ))
                 ],
               ),
@@ -169,9 +171,9 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Flexible(child: TextField(
                     controller: _lastMarkController,
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.calendar_today),
-                      hintText: 'Last Mark'
+                    decoration: InputDecoration(
+                      icon: const Icon(Icons.calendar_today),
+                      hintText: t.lastMark
                     ),
                     readOnly: true,
                     onTap: () async {
@@ -192,9 +194,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Flexible(child: TextField(
                     controller: _lastDeadlineController,
-                    decoration: const InputDecoration(
-                        icon: Icon(Icons.calendar_today),
-                        hintText: 'Last Deadline'
+                    decoration: InputDecoration(
+                        icon: const Icon(Icons.calendar_today),
+                        hintText: t.lastDeadline
                     ),
                     readOnly: true,
                     onTap: () async {
@@ -215,9 +217,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Flexible(child: TextField(
                     controller: _deadlineController,
-                    decoration: const InputDecoration(
-                        icon: Icon(Icons.calendar_today),
-                        hintText: 'Next Deadline'
+                    decoration: InputDecoration(
+                        icon: const Icon(Icons.calendar_today),
+                        hintText: t.deadline
                     ),
                     readOnly: true,
                     onTap: () async {
@@ -268,7 +270,7 @@ class _HomePageState extends State<HomePage> {
                   // Close the bottom sheet
                   Navigator.of(context).pop();
                 },
-                child: Text(engagement?.id == null ? 'Create New' : 'Update'),
+                child: Text(engagement?.id == null ? t.createItem : t.updateItem),
               )
             ],
           ),
@@ -302,18 +304,18 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _documents = engagementRepository.allDocumentStream(
-        DateTime(2020),
-        DateTime(2023)
+        DateTime(DateTime.now().year, DateTime.now().month, 1),
+        DateTime(DateTime.now().year, DateTime.now().month +1, 0)
     );
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-
+    t = AppLocalizations.of(context)!;
     _customerRepository = CustomerRepository(DatabaseHelper.instance.database!);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestio'),
+        title: Text(AppLocalizations.of(context)!.appTitle),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
@@ -325,7 +327,9 @@ class _HomePageState extends State<HomePage> {
                     initialDate: _selectedMonth ?? DateTime.now(),
                 );
                 if (_selectedMonth != null) {
-                  var lastDayDateTime = (_selectedMonth!.month < 12) ? new DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0) : new DateTime(_selectedMonth!.year + 1, 1, 0);
+                  var lastDayDateTime = (_selectedMonth!.month < 12) ?
+                  DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0) :
+                  DateTime(_selectedMonth!.year + 1, 1, 0);
                   setState(() {
                     _documents = engagementRepository.allDocumentStream(
                         _selectedMonth!,
@@ -334,19 +338,36 @@ class _HomePageState extends State<HomePage> {
                   });
                 }
               }, icon: const Icon(Icons.calendar_month))
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+            child: new ListTile(
+              leading: Icon(Icons.search),
+              title: new TextField(
+                controller: _searchController,
+                decoration: new InputDecoration(
+                  hintText: t.search,
+                  border: InputBorder.none
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+            child: IconButton(onPressed: () {}, icon: const Icon(Icons.settings),),
           )
         ],
       ),
       body: SafeArea(
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
           child: FutureBuilder(
               future: _documents,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 } else if (snapshot.hasError) {
-                  return Text('Error!');
+                  return const Text('Error!');
                 } else if (snapshot.connectionState == ConnectionState.done) {
                   return StreamBuilder(
                     stream: snapshot.data,
@@ -359,16 +380,16 @@ class _HomePageState extends State<HomePage> {
                               child:DataTable(
                                 sortColumnIndex: _currentSortColumn,
                                 sortAscending: _isSortAsc,
-                                columns: const [
-                                  DataColumn(label: Text('Owner')),
-                                  DataColumn(label: Text('Address')),
-                                  DataColumn(label: Text('Model')),
-                                  DataColumn(label: Text('Number')),
-                                  DataColumn(label: Text('Registered Code', softWrap: true,)),
-                                  DataColumn(label: Text('Last Mark')),
-                                  DataColumn(label: Text('Last Deadline')),
-                                  DataColumn(label: Text('Deadline')),
-                                  DataColumn(label: Text('Actions')),
+                                columns: [
+                                  DataColumn(label: Text(t.owner)),
+                                  DataColumn(label: Text(t.address)),
+                                  DataColumn(label: Text(t.model)),
+                                  DataColumn(label: Text(t.number)),
+                                  DataColumn(label: Text(t.registeredCode)),
+                                  DataColumn(label: Text(t.lastMark)),
+                                  DataColumn(label: Text(t.lastDeadline)),
+                                  DataColumn(label: Text(t.deadline)),
+                                  DataColumn(label: Text(t.actions)),
                                 ],
                                 rows: customers
                                     .map((customer) => DataRow(cells: [
@@ -394,17 +415,17 @@ class _HomePageState extends State<HomePage> {
                                   )),
                                   DataCell(IconButton(
                                     onPressed: () => _showForm(customer),
-                                    icon: Icon(Icons.edit),
+                                    icon: const Icon(Icons.edit),
                                   )),
                                 ])).toList())
                             )
                         );
                       }
-                      return Text('no data');
+                      return const Text('no data');
                     }
                   );
                 }
-                return Text('no data');
+                return const Text('no data');
               }),
         ),
       ),
