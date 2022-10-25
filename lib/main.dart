@@ -26,16 +26,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         // Remove the debug banner
         debugShowCheckedModeBanner: false,
-        title: 'Gestio',
+        onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+        locale: const Locale('it'),
         localizationsDelegates: const [
           AppLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate
         ],
-        supportedLocales: const [
-          Locale('en', ''),
-          Locale('it', '')
-        ],
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(
           primarySwatch: Colors.orange,
         ),
