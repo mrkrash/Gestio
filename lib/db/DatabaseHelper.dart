@@ -10,5 +10,15 @@ class DatabaseHelper {
   init() async {
     await CouchbaseLiteFlutter.init();
     database = Database.openSync('gestio');
+    var indexes = await database!.indexes;
+
+    if (!indexes.contains("overviewFTSIndex")) {
+      var index = FullTextIndexConfiguration(["firstname", "lastname", "address", "phone", "model", "registeredCode"]);
+      try {
+        database!.createIndex("overviewFTSIndex", index);
+      } catch (error) {
+        print(error.toString());
+      }
+    }
   }
 }

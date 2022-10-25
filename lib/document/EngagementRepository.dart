@@ -13,9 +13,17 @@ class EngagementRepository {
     _machineRepository = MachineRepository(DatabaseHelper.instance.database!);
   }
 
-  Future<Stream<List<Engagement>>> allDocumentStream(DateTime begin, DateTime end) async {
-    String _begin = begin.toIso8601String();
-    String _end = end.toIso8601String();
+  Future<Stream<List<Engagement>>> allDocumentStream(
+      DateTime begin,
+      DateTime end,
+      [String? searchTerm]
+      ) async {
+    String beginFormatted = begin.toIso8601String();
+    String endFormatted = end.toIso8601String();
+    String where = ''' WHERE _.deadline >= "$beginFormatted" AND _.deadline <= "$endFormatted" ''';
+    if (searchTerm != null) {
+      where += ''' AND MATCH(overviewFTSIndex, "$searchTerm") ''';
+    }
     final query = await Query.fromN1ql(DatabaseHelper.instance.database!,
       '''
       SELECT
@@ -33,7 +41,7 @@ class EngagementRepository {
         _.lastDeadline AS lastDeadline,
         _.deadline AS deadline
       FROM _ JOIN _ AS customer ON _.owner = customer._id
-      WHERE _.deadline >= "$_begin" AND _.deadline <= "$_end"
+      $where
       ORDER BY _.deadline ASC
       '''
     );
