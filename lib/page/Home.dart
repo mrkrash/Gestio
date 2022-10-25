@@ -315,23 +315,26 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Gestio'),
         actions: [
-          IconButton(onPressed: () async {
-            _selectedMonth = await showMonthPicker(
-                context: context,
-                firstDate: DateTime(DateTime.now().year - 1, 5),
-                lastDate: DateTime(DateTime.now().year + 1, 9),
-                initialDate: _selectedMonth ?? DateTime.now(),
-            );
-            if (_selectedMonth != null) {
-              var lastDayDateTime = (_selectedMonth!.month < 12) ? new DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0) : new DateTime(_selectedMonth!.year + 1, 1, 0);
-              setState(() {
-                _documents = engagementRepository.allDocumentStream(
-                    _selectedMonth!,
-                    lastDayDateTime
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+            child: IconButton(onPressed: () async {
+                _selectedMonth = await showMonthPicker(
+                    context: context,
+                    firstDate: DateTime(DateTime.now().year - 1, 5),
+                    lastDate: DateTime(DateTime.now().year + 1, 9),
+                    initialDate: _selectedMonth ?? DateTime.now(),
                 );
-              });
-            }
-          }, icon: const Icon(Icons.calendar_month))
+                if (_selectedMonth != null) {
+                  var lastDayDateTime = (_selectedMonth!.month < 12) ? new DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0) : new DateTime(_selectedMonth!.year + 1, 1, 0);
+                  setState(() {
+                    _documents = engagementRepository.allDocumentStream(
+                        _selectedMonth!,
+                        lastDayDateTime
+                    );
+                  });
+                }
+              }, icon: const Icon(Icons.calendar_month))
+          )
         ],
       ),
       body: SafeArea(
@@ -350,48 +353,52 @@ class _HomePageState extends State<HomePage> {
                     builder: (context, snapshot) {
                       var customers = snapshot.data;
                       if (customers != null && customers.isNotEmpty) {
-                        return DataTable(
-                            sortColumnIndex: _currentSortColumn,
-                            sortAscending: _isSortAsc,
-                            columns: [
-                              DataColumn(label: Text('Owner')),
-                              DataColumn(label: Text('Address')),
-                              DataColumn(label: Text('Model')),
-                              DataColumn(label: Text('Number')),
-                              DataColumn(label: Text('Registered Code')),
-                              DataColumn(label: Text('Last Mark')),
-                              DataColumn(label: Text('Last Deadline')),
-                              DataColumn(label: Text('Deadline')),
-                              DataColumn(label: Text('Actions')),
-                            ],
-                            rows: customers
-                                .map((customer) => DataRow(cells: [
-                              DataCell(Text(customer.owner)),
-                              DataCell(Text(customer.address)),
-                              DataCell(Text(customer.model)),
-                              DataCell(Text(customer.number)),
-                              DataCell(Text(customer.registeredCode)),
-                              DataCell(Text(
-                                  customer.lastMark != null ?
-                                  DateFormat('dd/MM/yyyy').format(customer.lastMark!) :
-                                  ''
-                              )),
-                              DataCell(Text(
-                                  customer.lastDeadline != null ?
-                                  DateFormat('dd/MM/yyyy').format(customer.lastDeadline!) :
-                                  ''
-                              )),
-                              DataCell(Text(
-                                  customer.deadline != null ?
-                                  DateFormat('dd/MM/yyyy').format(customer.deadline!) :
-                                  ''
-                              )),
-                              DataCell(IconButton(
-                                onPressed: () => _showForm(customer),
-                                icon: Icon(Icons.edit),
-                              )),
-                            ]))
-                                .toList());
+                        return SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: FittedBox(
+                              child:DataTable(
+                                sortColumnIndex: _currentSortColumn,
+                                sortAscending: _isSortAsc,
+                                columns: const [
+                                  DataColumn(label: Text('Owner')),
+                                  DataColumn(label: Text('Address')),
+                                  DataColumn(label: Text('Model')),
+                                  DataColumn(label: Text('Number')),
+                                  DataColumn(label: Text('Registered Code', softWrap: true,)),
+                                  DataColumn(label: Text('Last Mark')),
+                                  DataColumn(label: Text('Last Deadline')),
+                                  DataColumn(label: Text('Deadline')),
+                                  DataColumn(label: Text('Actions')),
+                                ],
+                                rows: customers
+                                    .map((customer) => DataRow(cells: [
+                                  DataCell(Text(customer.owner)),
+                                  DataCell(Text(customer.address)),
+                                  DataCell(Text(customer.model)),
+                                  DataCell(Text(customer.number)),
+                                  DataCell(Text(customer.registeredCode)),
+                                  DataCell(Text(
+                                      customer.lastMark != null ?
+                                      DateFormat('dd/MM/yyyy').format(customer.lastMark!) :
+                                      ''
+                                  )),
+                                  DataCell(Text(
+                                      customer.lastDeadline != null ?
+                                      DateFormat('dd/MM/yyyy').format(customer.lastDeadline!) :
+                                      ''
+                                  )),
+                                  DataCell(Text(
+                                      customer.deadline != null ?
+                                      DateFormat('dd/MM/yyyy').format(customer.deadline!) :
+                                      ''
+                                  )),
+                                  DataCell(IconButton(
+                                    onPressed: () => _showForm(customer),
+                                    icon: Icon(Icons.edit),
+                                  )),
+                                ])).toList())
+                            )
+                        );
                       }
                       return Text('no data');
                     }
