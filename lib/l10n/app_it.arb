@@ -6,6 +6,7 @@
   "updateItem": "Aggiorna",
   "owner": "Cliente",
   "@owner": { "description": "Nome del Cliente" },
+  "search": "Cerca",
   "firstname": "Nome",
   "lastname": "Cognome",
   "address": "Indirizzo",

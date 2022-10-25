@@ -5,6 +5,7 @@
   "@actions": {"description": "Actions that you can take"},
   "createItem": "Create New",
   "updateItem": "Update",
+  "search": "Search",
   "owner": "Customer",
   "@owner": { "description": "Customer Name" },
   "firstname": "Firstname",

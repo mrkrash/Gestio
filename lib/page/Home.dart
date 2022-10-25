@@ -341,14 +341,31 @@ class _HomePageState extends State<HomePage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-            child: new ListTile(
+            child: ListTile(
               leading: Icon(Icons.search),
-              title: new TextField(
+              title: TextField(
                 controller: _searchController,
-                decoration: new InputDecoration(
+                decoration: InputDecoration(
                   hintText: t.search,
                   border: InputBorder.none
                 ),
+                onChanged: (value) async {
+                  setState(() {
+                    _documents = engagementRepository.allDocumentStream(
+                      DateTime(2020),
+                      DateTime(2060),
+                      value
+                    );
+                  });
+                }
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.cancel),
+                onPressed: () {
+                  setState(() {
+                    _searchController.clear();
+                  });
+                },
               ),
             ),
           ),
