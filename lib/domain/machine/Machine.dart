@@ -1,6 +1,6 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/document/machine/MachineAbstract.dart';
-import 'package:gestio/db/ExtensionDictionary.dart';
+import 'package:gestio/domain/machine/MachineAbstract.dart';
+import 'package:gestio/infrastructure/services/db/ExtensionDictionary.dart';
 
 class Machine extends MachineAbstract {
   final DictionaryInterface dict;

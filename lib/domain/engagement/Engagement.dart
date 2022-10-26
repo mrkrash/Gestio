@@ -1,5 +1,5 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/document/EngagementAbstract.dart';
+import 'package:gestio/domain/engagement/EngagementAbstract.dart';
 
 class Engagement extends EngagementAbstract {
   final DictionaryInterface dict;

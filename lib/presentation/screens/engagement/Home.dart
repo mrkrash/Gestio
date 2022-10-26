@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gestio/db/DatabaseHelper.dart';
-import 'package:gestio/document/EngagementRepository.dart';
-import 'package:gestio/document/machine/MachineRepository.dart';
-import 'package:gestio/document/customer/Customer.dart';
-import 'package:gestio/document/customer/CustomerRepository.dart';
-import 'package:gestio/document/Engagement.dart';
+import 'package:gestio/infrastructure/services/db/DatabaseHelper.dart';
+import 'package:gestio/infrastructure/repositories/EngagementRepository.dart';
+import 'package:gestio/infrastructure/repositories/MachineRepository.dart';
+import 'package:gestio/domain/customer/Customer.dart';
+import 'package:gestio/infrastructure/repositories/CustomerRepository.dart';
+import 'package:gestio/domain/engagement/Engagement.dart';
 import 'package:month_picker_dialog_2/month_picker_dialog_2.dart';
 import 'package:app_bar_with_search_switch/app_bar_with_search_switch.dart';
 import 'package:intl/intl.dart';

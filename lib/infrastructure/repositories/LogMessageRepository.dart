@@ -1,6 +1,6 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/log/CblLogMessage.dart';
-import 'package:gestio/log/LogMessageAbstract.dart';
+import 'package:gestio/domain/log/CblLogMessage.dart';
+import 'package:gestio/domain/log/LogMessageAbstract.dart';
 
 class LogMessageRepository {
   final Database _database;

@@ -1,6 +1,6 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/db/DatabaseHelper.dart';
-import 'package:gestio/document/Engagement.dart';
+import 'package:gestio/infrastructure/services/db/DatabaseHelper.dart';
+import 'package:gestio/domain/engagement/Engagement.dart';
 
 class EngagementRepository {
   Future<Stream<List<Engagement>>> allDocumentStream(

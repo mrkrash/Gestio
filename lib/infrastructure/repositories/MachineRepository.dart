@@ -1,6 +1,6 @@
 import 'package:cbl/cbl.dart';
 
-import 'Machine.dart';
+import '../../domain/machine/Machine.dart';
 
 class MachineRepository {
   static const yearMark = 4;

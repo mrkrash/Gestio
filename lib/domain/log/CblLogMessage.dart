@@ -1,6 +1,6 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/db/ExtensionDictionary.dart';
-import 'package:gestio/log/LogMessageAbstract.dart';
+import 'package:gestio/infrastructure/services/db/ExtensionDictionary.dart';
+import 'package:gestio/domain/log/LogMessageAbstract.dart';
 
 class CblLogMessage extends LogMessageAbstract {
   final DictionaryInterface dict;

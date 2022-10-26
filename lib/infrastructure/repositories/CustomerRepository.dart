@@ -1,5 +1,5 @@
 import 'package:cbl/cbl.dart';
-import 'package:gestio/document/customer/Customer.dart';
+import 'package:gestio/domain/customer/Customer.dart';
 
 class CustomerRepository {
   final Database _database;
