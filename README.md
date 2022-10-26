@@ -1,4 +1,4 @@
-# gestio
+# Gestio
 
 A simple management software to manage scheduled maintenance at customers, 
 designed for small businesses
