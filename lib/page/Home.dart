@@ -5,8 +5,9 @@ import 'package:gestio/document/machine/MachineRepository.dart';
 import 'package:gestio/document/customer/Customer.dart';
 import 'package:gestio/document/customer/CustomerRepository.dart';
 import 'package:gestio/document/Engagement.dart';
-import 'package:intl/intl.dart';
 import 'package:month_picker_dialog_2/month_picker_dialog_2.dart';
+import 'package:app_bar_with_search_switch/app_bar_with_search_switch.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
@@ -314,67 +315,57 @@ class _HomePageState extends State<HomePage> {
     t = AppLocalizations.of(context)!;
     _customerRepository = CustomerRepository(DatabaseHelper.instance.database!);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.appTitle),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-            child: IconButton(onPressed: () async {
-                _selectedMonth = await showMonthPicker(
-                    context: context,
-                    firstDate: DateTime(DateTime.now().year - 1, 5),
-                    lastDate: DateTime(DateTime.now().year + 1, 9),
-                    initialDate: _selectedMonth ?? DateTime.now(),
-                );
-                if (_selectedMonth != null) {
-                  var lastDayDateTime = (_selectedMonth!.month < 12) ?
-                  DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0) :
-                  DateTime(_selectedMonth!.year + 1, 1, 0);
-                  setState(() {
-                    _documents = engagementRepository.allDocumentStream(
-                        _selectedMonth!,
-                        lastDayDateTime
-                    );
-                  });
-                }
-              }, icon: const Icon(Icons.calendar_month))
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-            child: ListTile(
-              leading: Icon(Icons.search),
-              title: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: t.search,
-                  border: InputBorder.none
+      appBar: AppBarWithSearchSwitch(
+          onChanged: (value) async {
+            setState(() {
+              _documents = (value.isEmpty) ?
+              engagementRepository.allDocumentStream(
+                  DateTime(DateTime.now().year, DateTime.now().month, 1),
+                  DateTime(DateTime.now().year, DateTime.now().month +1, 0)
+              ) : engagementRepository.allDocumentStream(
+                  DateTime(2020),
+                  DateTime(2060),
+                  value
+              );
+
+            });
+          },
+        appBarBuilder: (context) {
+            return AppBar(
+              title: Text(AppLocalizations.of(context)!.appTitle),
+              actions: [
+                const AppBarSearchButton(),
+                Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                    child: IconButton(onPressed: () async {
+                      _selectedMonth = await showMonthPicker(
+                        context: context,
+                        firstDate: DateTime(DateTime.now().year - 1, 5),
+                        lastDate: DateTime(DateTime.now().year + 1, 9),
+                        initialDate: _selectedMonth ?? DateTime.now(),
+                      );
+                      if (_selectedMonth != null) {
+                        var lastDayDateTime = (_selectedMonth!.month < 12) ?
+                        DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0) :
+                        DateTime(_selectedMonth!.year + 1, 1, 0);
+                        setState(() {
+                          _documents = engagementRepository.allDocumentStream(
+                              _selectedMonth!,
+                              lastDayDateTime
+                          );
+                        });
+                      }
+                    }, icon: const Icon(Icons.calendar_month))
                 ),
-                onChanged: (value) async {
-                  setState(() {
-                    _documents = engagementRepository.allDocumentStream(
-                      DateTime(2020),
-                      DateTime(2060),
-                      value
-                    );
-                  });
-                }
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.cancel),
-                onPressed: () {
-                  setState(() {
-                    _searchController.clear();
-                  });
-                },
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-            child: IconButton(onPressed: () {}, icon: const Icon(Icons.settings),),
-          )
-        ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                  child: IconButton(onPressed: () {}, icon: const Icon(Icons.settings),),
+                )
+              ],
+            );
+        },
       ),
+
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
