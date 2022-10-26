@@ -45,6 +45,9 @@ dependencies:
   cbl_flutter: ^2.0.1
   cbl: ^2.1.0
 
+  app_bar_with_search_switch: 1.3.6
+  settings_ui: 2.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
