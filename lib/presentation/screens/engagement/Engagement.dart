@@ -10,14 +10,14 @@ import 'package:app_bar_with_search_switch/app_bar_with_search_switch.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class EngagementScreen extends StatefulWidget {
+  const EngagementScreen({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _EngagementScreenState createState() => _EngagementScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _EngagementScreenState extends State<EngagementScreen> {
   int _currentSortColumn = 0;
   bool _isSortAsc = true;
 
