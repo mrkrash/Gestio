@@ -1,69 +1,73 @@
 import 'package:cbl/cbl.dart';
 import 'package:gestio/db/DatabaseHelper.dart';
 import 'package:gestio/document/Engagement.dart';
-import 'package:gestio/document/customer/CustomerRepository.dart';
-import 'package:gestio/document/machine/MachineRepository.dart';
 
 class EngagementRepository {
-  late final CustomerRepository _customerRepository;
-  late final MachineRepository _machineRepository;
-
-  EngagementRepository() {
-    _customerRepository = CustomerRepository(DatabaseHelper.instance.database!);
-    _machineRepository = MachineRepository(DatabaseHelper.instance.database!);
-  }
-
   Future<Stream<List<Engagement>>> allDocumentStream(
       DateTime begin,
       DateTime end,
       [String? searchTerm]
       ) async {
-    String beginFormatted = begin.toIso8601String();
-    String endFormatted = end.toIso8601String();
-    String where = ''' WHERE _.deadline >= "$beginFormatted" AND _.deadline <= "$endFormatted" ''';
+    DataSourceInterface machineDS = DataSource
+        .database(DatabaseHelper.instance.database!)
+        .as("machineDS");
+    DataSourceInterface customerDS = DataSource
+        .database(DatabaseHelper.instance.database!)
+        .as("customerDS");
+    ExpressionInterface machineOwnerExpr = Expression.property("owner")
+        .from("machineDS");
+    ExpressionInterface customerIdExpr = Expression.property("_id")
+        .from("customerDS");
+    ExpressionInterface joinExpr = machineOwnerExpr.equalTo(customerIdExpr)
+        .and(Expression.property("type").from("machineDS").equalTo(Expression.string("machine")))
+        .and(Expression.property("type").from("customerDS").equalTo(Expression.string("customer")));
+    JoinInterface join = Join.join(customerDS).on(joinExpr);
+    ExpressionInterface where = Expression.property("deadline")
+        .from("machineDS").between(Expression.date(begin), and: Expression.date(end));
+
     if (searchTerm != null) {
-      where += ''' AND MATCH(overviewFTSIndex, "$searchTerm") ''';
+      where = Function_.lower(Expression.property("firstname").from("customerDS")).like(Function_.lower(Expression.string("%$searchTerm%")))
+          .or(Function_.lower(Expression.property("lastname").from("customerDS")).like(Function_.lower(Expression.string("%$searchTerm%"))))
+          .or(Function_.lower(Expression.property("address").from("customerDS")).like(Function_.lower(Expression.string("%$searchTerm%"))))
+          .or(Function_.lower(Expression.property("model").from("machineDS")).like(Function_.lower(Expression.string("%$searchTerm%"))))
+          .or(Function_.lower(Expression.property("registeredCode").from("machineDS")).like(Function_.lower(Expression.string("%$searchTerm%"))))
+          .and(Expression.property("deadline").from("machineDS").notNullOrMissing());
     }
-    final query = await Query.fromN1ql(DatabaseHelper.instance.database!,
-      '''
-      SELECT
-        _._id AS id,
-        _.owner AS ownerID,
-        customer.firstname AS firstname,
-        customer.lastname AS lastname,
-        customer.address AS address,
-        customer.phone AS phone,
-        _.model AS model,
-        _.fluel AS fluel,
-        _.number AS number,
-        _.registeredCode AS registeredCode,
-        _.lastMark AS lastMark,
-        _.lastDeadline AS lastDeadline,
-        _.deadline AS deadline
-      FROM _ JOIN _ AS customer ON _.owner = customer._id
-      $where
-      ORDER BY _.deadline ASC
-      '''
-    );
+
+    var query = const QueryBuilder()
+      .select(
+        SelectResult.all().from("machineDS"),
+        SelectResult.expression(Expression.property("_id").from("machineDS")).as("id"),
+        SelectResult.expression(Expression.property("firstname").from("customerDS")).as("firstname"),
+        SelectResult.expression(Expression.property("lastname").from("customerDS")).as("lastname"),
+        SelectResult.expression(Expression.property("address").from("customerDS")).as("address"),
+        SelectResult.expression(Expression.property("phone").from("customerDS")).as("phone")
+      )
+      .from(machineDS)
+      .join(join)
+      .where(where);
 
     return query.changes().asyncMap(
             (change) => change.results.asStream().map(
-                (result) => Engagement(MutableDocument({
-                  'id': result.string('id'),
-                  'ownerID': result.string('ownerID'),
-                  'firstname': result.string('firstname'),
-                  'lastname': result.string('lastname'),
-                  'owner': '${result.string('firstname')!} ${result.string('lastname')!}',
-                  'address': result.string('address'),
-                  'phone': result.string('phone'),
-                  'model': result.string('model'),
-                  'fluel': result.string('fluel'),
-                  'number': result.string('number'),
-                  'registeredCode': result.string('registeredCode'),
-                  'deadline': result.string('deadline'),
-                  'lastDeadline': result.string('lastDeadline'),
-                  'lastMark': result.string('lastMark'),
-                }))
+                (result) {
+                  var machineProps = result.dictionary("machineDS")!;
+                  return Engagement(MutableDocument({
+                    'id': result.string('id'),
+                    'ownerID': machineProps.string('owner'),
+                    'firstname': result.string('firstname'),
+                    'lastname': result.string('lastname'),
+                    'owner': '${result.string('firstname')!} ${result.string('lastname')!}',
+                    'address': result.string('address'),
+                    'phone': result.string('phone'),
+                    'model': machineProps.string('model'),
+                    'fluel': machineProps.string('fluel'),
+                    'number': machineProps.string('number'),
+                    'registeredCode': machineProps.string('registeredCode'),
+                    'deadline': machineProps.string('deadline'),
+                    'lastDeadline': machineProps.string('lastDeadline'),
+                    'lastMark': machineProps.string('lastMark'),
+                  }));
+                }
             ).toList(),
     );
   }
