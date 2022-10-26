@@ -40,11 +40,10 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   cbl_flutter_ce: 2.1.1
-  time_planner: ^0.1.1
-  month_picker_dialog_2: ^0.5.6
   cbl_flutter: ^2.0.1
   cbl: ^2.1.0
 
+  month_picker_dialog_2: ^0.5.6
   app_bar_with_search_switch: 1.3.6
   settings_ui: 2.0.2
 
