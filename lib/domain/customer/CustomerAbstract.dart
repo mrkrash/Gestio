@@ -17,8 +17,6 @@
  * Gestio. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import '../machine/Machine.dart';
-
 abstract class CustomerAbstract {
   String get id;
   DateTime get createdAt;
