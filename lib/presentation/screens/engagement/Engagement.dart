@@ -24,6 +24,7 @@ import 'package:gestio/infrastructure/repositories/MachineRepository.dart';
 import 'package:gestio/domain/customer/Customer.dart';
 import 'package:gestio/infrastructure/repositories/CustomerRepository.dart';
 import 'package:gestio/domain/engagement/Engagement.dart';
+import 'package:gestio/presentation/screens/settings/Setting.dart';
 import 'package:month_picker_dialog_2/month_picker_dialog_2.dart';
 import 'package:app_bar_with_search_switch/app_bar_with_search_switch.dart';
 import 'package:intl/intl.dart';
@@ -59,8 +60,6 @@ class _EngagementScreenState extends State<EngagementScreen> {
   final TextEditingController _lastDeadlineController = TextEditingController();
   final TextEditingController _lastMarkController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
-
-  final TextEditingController _searchController = TextEditingController();
 
   DateTime? _selectedMonth;
   DateTime? _lastDeadline;
@@ -378,7 +377,16 @@ class _EngagementScreenState extends State<EngagementScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-                  child: IconButton(onPressed: () {}, icon: const Icon(Icons.settings),),
+                  child: IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const SettingScreen(),
+                        )
+                      );
+                    },
+                  ),
                 )
               ],
             );
@@ -437,7 +445,7 @@ class _EngagementScreenState extends State<EngagementScreen> {
                                   )),
                                   DataCell(Text(
                                       customer.deadline != null ?
-                                      DateFormat('dd/MM/yyyy').format(customer.deadline!) :
+                                      DateFormat('dd/MM/yyyy').format(customer.deadline) :
                                       ''
                                   )),
                                   DataCell(IconButton(

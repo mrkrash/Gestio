@@ -38,6 +38,24 @@ class DatabaseHelper {
       } catch (error) {
         print(error.toString());
       }
+      try {
+        final yearDeadline = MutableDocument({
+          'type': 'setting',
+          'updatedAt': DateTime.now(),
+          'key': 'yearDeadline',
+          'value': 2
+        });
+        final yearMark = MutableDocument({
+          'type': 'setting',
+          'updatedAt': DateTime.now(),
+          'key': 'yearMark',
+          'value': 4
+        });
+        database!.saveDocument(yearDeadline);
+        database!.saveDocument(yearMark);
+      } catch (error) {
+        print(error.toString());
+      }
     }
   }
 }
