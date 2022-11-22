@@ -18,7 +18,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:gestio/infrastructure/services/db/DatabaseHelper.dart';
 import 'package:gestio/infrastructure/repositories/EngagementRepository.dart';
 import 'package:gestio/infrastructure/repositories/MachineRepository.dart';
 import 'package:gestio/domain/customer/Customer.dart';
@@ -55,7 +54,8 @@ class _EngagementScreenState extends State<EngagementScreen> {
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _fluelController = TextEditingController();
   final TextEditingController _numberController = TextEditingController();
-  final TextEditingController _registeredCodeController = TextEditingController();
+  final TextEditingController _registeredCodeController =
+      TextEditingController();
 
   final TextEditingController _lastDeadlineController = TextEditingController();
   final TextEditingController _lastMarkController = TextEditingController();
@@ -72,347 +72,468 @@ class _EngagementScreenState extends State<EngagementScreen> {
   // It will also be triggered when you want to update an item
   void _showForm(Engagement? engagement) async {
     if (engagement != null) {
-         _firstnameController.text = engagement.firstname;
-         _lastnameController.text = engagement.lastname;
-         _addressController.text = engagement.address;
-         _phoneController.text = engagement.phone ?? '';
-         _modelController.text = engagement.model;
-         _fluelController.text = engagement.fluel;
-         _numberController.text = engagement.number;
-         _registeredCodeController.text = engagement.registeredCode;
-         _lastDeadline = engagement.lastDeadline;
-         _lastDeadlineController.text = engagement.lastDeadline != null
-             ? DateFormat('dd/MM/yyyy').format(engagement.lastDeadline!) : '';
-         _lastMark = engagement.lastMark;
-         _lastMarkController.text = engagement.lastMark != null
-             ? DateFormat('dd/MM/yyyy').format(engagement.lastMark!) : '';
-         _deadline = engagement.deadline;
-         _deadlineController.text = DateFormat('dd/MM/yyyy')
-             .format(engagement.deadline);
+      _firstnameController.text = engagement.firstname;
+      _lastnameController.text = engagement.lastname;
+      _addressController.text = engagement.address;
+      _phoneController.text = engagement.phone ?? '';
+      _modelController.text = engagement.model;
+      _fluelController.text = engagement.fluel;
+      _numberController.text = engagement.number;
+      _registeredCodeController.text = engagement.registeredCode;
+      _lastDeadline = engagement.lastDeadline;
+      _lastDeadlineController.text = engagement.lastDeadline != null
+          ? DateFormat('dd/MM/yyyy').format(engagement.lastDeadline!)
+          : '';
+      _lastMark = engagement.lastMark;
+      _lastMarkController.text = engagement.lastMark != null
+          ? DateFormat('dd/MM/yyyy').format(engagement.lastMark!)
+          : '';
+      _deadline = engagement.deadline;
+      _deadlineController.text =
+          DateFormat('dd/MM/yyyy').format(engagement.deadline);
     }
-
-    _machineRepository = MachineRepository(DatabaseHelper.instance.database!);
 
     showModalBottomSheet(
         context: context,
         elevation: 5,
         isScrollControlled: true,
         builder: (_) => Container(
-          padding: EdgeInsets.only(
-            top: 15,
-            left: 15,
-            right: 15,
-            // this will prevent the soft keyboard from covering the text fields
-            bottom: MediaQuery.of(context).viewInsets.bottom + 120,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
+              padding: EdgeInsets.only(
+                top: 15,
+                left: 15,
+                right: 15,
+                // this will prevent the soft keyboard from covering the text fields
+                bottom: MediaQuery.of(context).viewInsets.bottom + 120,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Flexible(child: TextField(
-                    controller: _firstnameController,
-                    decoration: InputDecoration(hintText: t.firstname),
-                  )),
-                  const SizedBox(
-                    width: 10,
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Flexible(
+                          child: TextField(
+                        controller: _firstnameController,
+                        decoration: InputDecoration(
+                          hintText: t.firstname,
+                          labelText: t.firstname,
+                        ),
+                      )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Flexible(
+                          child: TextField(
+                        controller: _lastnameController,
+                        decoration: InputDecoration(
+                          hintText: t.lastname,
+                          labelText: t.lastname,
+                        ),
+                      ))
+                    ],
                   ),
-                  Flexible(child: TextField(
-                    controller: _lastnameController,
-                    decoration: InputDecoration(hintText: t.lastname),
-                  ))
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Flexible(child: TextField(
-                    controller: _addressController,
-                    decoration: InputDecoration(hintText: t.address),
-                  )),
                   const SizedBox(
-                    width: 10,
+                    height: 10,
                   ),
-                  Flexible(child: TextField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(hintText: t.phone),
-                  ))
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Flexible(child: TextField(
-                    controller: _modelController,
-                    decoration: InputDecoration(hintText: t.model),
-                  )),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Flexible(
+                          child: TextField(
+                        controller: _addressController,
+                        decoration: InputDecoration(
+                          hintText: t.address,
+                          labelText: t.address,
+                        ),
+                      )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Flexible(
+                          child: TextField(
+                        controller: _phoneController,
+                        decoration: InputDecoration(
+                          hintText: t.phone,
+                          labelText: t.phone,
+                        ),
+                      ))
+                    ],
+                  ),
                   const SizedBox(
-                    width: 10,
+                    height: 10,
                   ),
-                  Flexible(child: TextField(
-                    controller: _fluelController,
-                    decoration: InputDecoration(hintText: t.fluel),
-                  ))
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Flexible(child: TextField(
-                    controller: _numberController,
-                    decoration: InputDecoration(hintText: t.number),
-                  )),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Flexible(
+                          child: TextField(
+                        controller: _modelController,
+                        decoration: InputDecoration(
+                          hintText: t.model,
+                          labelText: t.model,
+                        ),
+                      )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Flexible(
+                          child: TextField(
+                        controller: _fluelController,
+                        decoration: InputDecoration(
+                          hintText: t.fluel,
+                          labelText: t.fluel,
+                        ),
+                      ))
+                    ],
+                  ),
                   const SizedBox(
-                    width: 10,
+                    height: 10,
                   ),
-                  Flexible(child: TextField(
-                    controller: _registeredCodeController,
-                    decoration: InputDecoration(hintText: t.registeredCode),
-                  ))
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Flexible(child: TextField(
-                    controller: _lastMarkController,
-                    decoration: InputDecoration(
-                      icon: const Icon(Icons.calendar_today),
-                      hintText: t.lastMark
-                    ),
-                    readOnly: true,
-                    onTap: () async {
-                      _lastMark = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2060));
-                      if (_lastMark != null) {
-                        setState(() {
-                          _lastMarkController.text = DateFormat('dd/MM/yyyy').format(_lastMark!);
-                        });
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Flexible(
+                          child: TextField(
+                        controller: _numberController,
+                        decoration: InputDecoration(
+                          hintText: t.number,
+                          labelText: t.number,
+                        ),
+                      )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Flexible(
+                          child: TextField(
+                        controller: _registeredCodeController,
+                        decoration: InputDecoration(
+                          hintText: t.registeredCode,
+                          labelText: t.registeredCode,
+                        ),
+                      ))
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Flexible(
+                          child: TextField(
+                        controller: _lastMarkController,
+                        decoration: InputDecoration(
+                          icon: const Icon(Icons.calendar_today),
+                          hintText: t.lastMark,
+                          labelText: t.lastMark,
+                        ),
+                        readOnly: true,
+                        onTap: () async {
+                          _lastMark = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2060));
+                          if (_lastMark != null) {
+                            setState(() {
+                              _lastMarkController.text =
+                                  DateFormat('dd/MM/yyyy').format(_lastMark!);
+                            });
+                          }
+                        },
+                      )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Flexible(
+                          child: TextField(
+                        controller: _lastDeadlineController,
+                        decoration: InputDecoration(
+                          icon: const Icon(Icons.calendar_today),
+                          hintText: t.lastDeadline,
+                          labelText: t.lastDeadline,
+                        ),
+                        readOnly: true,
+                        onTap: () async {
+                          _lastDeadline = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2060));
+                          if (_lastDeadline != null) {
+                            setState(() {
+                              _lastDeadlineController.text =
+                                  DateFormat('dd/MM/yyyy')
+                                      .format(_lastDeadline!);
+                            });
+                          }
+                        },
+                      )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Flexible(
+                          child: TextField(
+                        controller: _deadlineController,
+                        decoration: InputDecoration(
+                          icon: const Icon(Icons.calendar_today),
+                          hintText: t.deadline,
+                          labelText: t.deadline,
+                        ),
+                        readOnly: true,
+                        onTap: () async {
+                          _deadline = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2060));
+                          if (_deadline != null) {
+                            setState(() {
+                              _deadlineController.text =
+                                  DateFormat('dd/MM/yyyy').format(_deadline!);
+                            });
+                          }
+                        },
+                      )),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Save new journal
+                      if (engagement == null) {
+                        await _addItem();
                       }
-                    },
-                  )),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Flexible(child: TextField(
-                    controller: _lastDeadlineController,
-                    decoration: InputDecoration(
-                        icon: const Icon(Icons.calendar_today),
-                        hintText: t.lastDeadline
-                    ),
-                    readOnly: true,
-                    onTap: () async {
-                      _lastDeadline = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2060));
-                      if (_lastDeadline != null) {
-                        setState(() {
-                          _lastDeadlineController.text = DateFormat('dd/MM/yyyy').format(_lastDeadline!);
-                        });
+
+                      if (engagement != null) {
+                        await _updateItem(engagement);
                       }
+
+                      // Clear the text fields
+                      _clearForm();
+                      // Close the bottom sheet
+                      Navigator.of(context).pop();
                     },
-                  )),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Flexible(child: TextField(
-                    controller: _deadlineController,
-                    decoration: InputDecoration(
-                        icon: const Icon(Icons.calendar_today),
-                        hintText: t.deadline
-                    ),
-                    readOnly: true,
-                    onTap: () async {
-                      _deadline = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2060));
-                      if (_deadline != null) {
-                        setState(() {
-                          _deadlineController.text = DateFormat('dd/MM/yyyy').format(_deadline!);
-                        });
-                      }
-                    },
-                  )),
+                    child: Text(
+                        engagement?.id == null ? t.createItem : t.updateItem),
+                  )
                 ],
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  // Save new journal
-                  if (engagement == null) {
-                    await _addItem();
-                  }
-
-                  if (engagement != null) {
-                    await _updateItem(engagement);
-                  }
-
-                  // Clear the text fields
-                  _firstnameController.text = '';
-                  _lastnameController.text = '';
-                  _addressController.text = '';
-                  _phoneController.text = '';
-                  _modelController.text = '';
-                  _fluelController.text = '';
-                  _numberController.text = '';
-                  _registeredCodeController.text = '';
-                  _lastDeadlineController.text = '';
-                  _lastMarkController.text = '';
-                  _deadlineController.text = '';
-                  _lastDeadline = null;
-                  _lastMark = null;
-                  _deadline = null;
-
-                  // Close the bottom sheet
-                  Navigator.of(context).pop();
-                },
-                child: Text(engagement?.id == null ? t.createItem : t.updateItem),
-              )
-            ],
-          ),
-        ));
+            ));
   }
 
   Future<void> _addItem() async {
-    final Customer customer = await _customerRepository.createCustomer(_firstnameController.text,
-        _lastnameController.text, _addressController.text, _phoneController.text);
-    await _machineRepository.createMachine(customer.id, _modelController.text,
-        _fluelController.text, _numberController.text,
-        _registeredCodeController.text, _lastMark, _lastDeadline, _deadline
-    );
+    final Customer customer = await _customerRepository.createCustomer(
+        _firstnameController.text,
+        _lastnameController.text,
+        _addressController.text,
+        _phoneController.text);
+    await _machineRepository.createMachine(
+        customer.id,
+        _modelController.text,
+        _fluelController.text,
+        _numberController.text,
+        _registeredCodeController.text,
+        _lastMark,
+        _lastDeadline,
+        _deadline);
   }
 
   Future<void> _updateItem(Engagement engagement) async {
-    await _customerRepository.updateCustomer(engagement.ownerID, _firstnameController.text,
-        _lastnameController.text, _addressController.text, _phoneController.text);
-    await _machineRepository.updateMachine(engagement.id, engagement.ownerID,
-        _modelController.text, _fluelController.text, _numberController.text,
-        _registeredCodeController.text, _lastMark, _lastDeadline, _deadline);
+    await _customerRepository.updateCustomer(
+        engagement.ownerID,
+        _firstnameController.text,
+        _lastnameController.text,
+        _addressController.text,
+        _phoneController.text);
+    await _machineRepository.updateMachine(
+        engagement.id,
+        engagement.ownerID,
+        _modelController.text,
+        _fluelController.text,
+        _numberController.text,
+        _registeredCodeController.text,
+        _lastMark,
+        _lastDeadline,
+        _deadline);
   }
 
-  void _markItem(String id) {}
+  void _markItem(Engagement engagement) => showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        late DateTime? _markDate;
+        _deadline = engagement.deadline;
+        _deadlineController.text =
+            DateFormat('dd/MM/yyyy').format(engagement.deadline);
+        return AlertDialog(
+          title: Text(t.markTitle),
+          content: Container(
+              child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(t.markDescription),
+                    TextField(
+                      controller: _deadlineController,
+                      decoration: InputDecoration(
+                          icon: const Icon(Icons.calendar_today),
+                          labelText: t.lastDeadline,
+                          hintText: t.lastDeadline),
+                      readOnly: true,
+                      onTap: () async {
+                        _markDate = await showDatePicker(
+                            context: context,
+                            initialDate: engagement.deadline,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2060));
+                        if (_markDate != null) {
+                          setState(() {
+                            _deadline = _markDate;
+                            _deadlineController.text =
+                                DateFormat('dd/MM/yyyy').format(_markDate!);
+                          });
+                        }
+                      },
+                    )
+                  ],
+                ),
+              )
+            ],
+          )),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context, t.cancel);
+                  _deadlineController.text;
+                },
+                child: Text(t.cancel)),
+            TextButton(
+                onPressed: () async {
+                  await _machineRepository.updateDeadline(
+                      engagement.id, _deadline!);
+                  Navigator.pop(context, t.cancel);
+                  _deadlineController.text = '';
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(t.markedItem),
+                  ));
+                },
+                child: Text(t.save)),
+          ],
+        );
+      });
 
   void _deleteItem(String id) => showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(t.deleteAlertTitle),
-        content: Text(t.deleteAlertDescription),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, t.cancel),
-              child: Text(t.cancel)
-          ),
-          TextButton(
-              onPressed: () async
-              {
-                await _customerRepository.deleteCustomer(id);
-                Navigator.pop(context, t.cancel);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Successfully deleted a journal!'),
-                ));
-              },
-              child: Text(t.delete)
-          ),
-        ],
-      ),
-  );
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(t.deleteAlertTitle),
+          content: Text(t.deleteAlertDescription),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context, t.cancel),
+                child: Text(t.cancel)),
+            TextButton(
+                onPressed: () async {
+                  await _customerRepository.deleteCustomer(id);
+                  Navigator.pop(context, t.cancel);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Successfully deleted a journal!'),
+                  ));
+                },
+                child: Text(t.delete)),
+          ],
+        ),
+      );
+
+  void _clearForm() {
+    _firstnameController.text = '';
+    _lastnameController.text = '';
+    _addressController.text = '';
+    _phoneController.text = '';
+    _modelController.text = '';
+    _fluelController.text = '';
+    _numberController.text = '';
+    _registeredCodeController.text = '';
+    _lastDeadlineController.text = '';
+    _lastMarkController.text = '';
+    _deadlineController.text = '';
+    _lastDeadline = null;
+    _lastMark = null;
+    _deadline = null;
+  }
 
   @override
   void initState() {
     _documents = engagementRepository.allDocumentStream(
         DateTime(DateTime.now().year, DateTime.now().month, 1),
-        DateTime(DateTime.now().year, DateTime.now().month +1, 0)
-    );
+        DateTime(DateTime.now().year, DateTime.now().month + 1, 0));
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     t = AppLocalizations.of(context)!;
-    _customerRepository = CustomerRepository(DatabaseHelper.instance.database!);
+    _customerRepository = CustomerRepository();
+    _machineRepository = MachineRepository();
     return Scaffold(
       appBar: AppBarWithSearchSwitch(
-          onChanged: (value) async {
-            setState(() {
-              _documents = (value.isEmpty) ?
-              engagementRepository.allDocumentStream(
-                  DateTime(DateTime.now().year, DateTime.now().month, 1),
-                  DateTime(DateTime.now().year, DateTime.now().month +1, 0)
-              ) : engagementRepository.allDocumentStream(
-                  DateTime(2020),
-                  DateTime(2060),
-                  value
-              );
-
-            });
-          },
+        onChanged: (value) async {
+          setState(() {
+            _documents = (value.isEmpty)
+                ? engagementRepository.allDocumentStream(
+                    DateTime(DateTime.now().year, DateTime.now().month, 1),
+                    DateTime(DateTime.now().year, DateTime.now().month + 1, 0))
+                : engagementRepository.allDocumentStream(
+                    DateTime(2020), DateTime(2060), value);
+          });
+        },
         appBarBuilder: (context) {
-            return AppBar(
-              title: Text(AppLocalizations.of(context)!.appTitle),
-              actions: [
-                const AppBarSearchButton(),
-                Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-                    child: IconButton(onPressed: () async {
-                      _selectedMonth = await showMonthPicker(
-                        context: context,
-                        firstDate: DateTime(DateTime.now().year - 1, 5),
-                        lastDate: DateTime(DateTime.now().year + 1, 9),
-                        initialDate: _selectedMonth ?? DateTime.now(),
-                      );
-                      if (_selectedMonth != null) {
-                        var lastDayDateTime = (_selectedMonth!.month < 12) ?
-                        DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0) :
-                        DateTime(_selectedMonth!.year + 1, 1, 0);
-                        setState(() {
-                          _documents = engagementRepository.allDocumentStream(
-                              _selectedMonth!,
-                              lastDayDateTime
-                          );
-                        });
-                      }
-                    }, icon: const Icon(Icons.calendar_month))
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+          return AppBar(
+            title: Text(AppLocalizations.of(context)!.appTitle),
+            actions: [
+              const AppBarSearchButton(),
+              Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 0.0, horizontal: 10.0),
                   child: IconButton(
-                    icon: const Icon(Icons.settings),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const SettingScreen(),
-                        )
-                      );
-                    },
-                  ),
-                )
-              ],
-            );
+                      onPressed: () async {
+                        _selectedMonth = await showMonthPicker(
+                          context: context,
+                          firstDate: DateTime(DateTime.now().year - 1, 5),
+                          lastDate: DateTime(DateTime.now().year + 10, 9),
+                          initialDate: _selectedMonth ?? DateTime.now(),
+                        );
+                        if (_selectedMonth != null) {
+                          var lastDayDateTime = (_selectedMonth!.month < 12)
+                              ? DateTime(_selectedMonth!.year,
+                                  _selectedMonth!.month + 1, 0)
+                              : DateTime(_selectedMonth!.year + 1, 1, 0);
+                          setState(() {
+                            _documents = engagementRepository.allDocumentStream(
+                                _selectedMonth!, lastDayDateTime);
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.calendar_month))),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                child: IconButton(
+                  icon: const Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const SettingScreen(),
+                    ));
+                  },
+                ),
+              )
+            ],
+          );
         },
       ),
-
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
@@ -420,95 +541,129 @@ class _EngagementScreenState extends State<EngagementScreen> {
               future: _documents,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
+                  return Container(
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator(),
+                  );
                 } else if (snapshot.hasError) {
-                  return const Text('Error!');
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      t.error,
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  );
                 } else if (snapshot.connectionState == ConnectionState.done) {
                   return StreamBuilder(
-                    stream: snapshot.data,
-                    builder: (context, snapshot) {
-                      var customers = snapshot.data;
-                      if (customers != null && customers.isNotEmpty) {
-                        return SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: FittedBox(
-                              child:DataTable(
-                                sortColumnIndex: _currentSortColumn,
-                                sortAscending: _isSortAsc,
-                                columns: [
-                                  DataColumn(label: Text(t.owner)),
-                                  DataColumn(label: Text(t.address)),
-                                  DataColumn(label: Text(t.model)),
-                                  DataColumn(label: Text(t.number)),
-                                  DataColumn(label: Text(t.registeredCode)),
-                                  DataColumn(label: Text(t.lastMark)),
-                                  DataColumn(label: Text(t.lastDeadline)),
-                                  DataColumn(label: Text(t.deadline)),
-                                  DataColumn(label: Text(t.actions)),
-                                ],
-                                rows: customers
-                                    .map((customer) => DataRow(cells: [
-                                  DataCell(Text(
-                                    customer.owner,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  )),
-                                  DataCell(Text(customer.address)),
-                                  DataCell(Text(customer.model)),
-                                  DataCell(Text(customer.number)),
-                                  DataCell(Text(customer.registeredCode)),
-                                  DataCell(Text(
-                                      customer.lastMark != null ?
-                                      DateFormat('dd/MM/yyyy').format(customer.lastMark!) :
-                                      ''
-                                  )),
-                                  DataCell(Text(
-                                      customer.lastDeadline != null ?
-                                      DateFormat('dd/MM/yyyy').format(customer.lastDeadline!) :
-                                      ''
-                                  )),
-                                  DataCell(Text(
-                                    customer.deadline != null ?
-                                        DateFormat('dd/MM/yyyy').format(customer.deadline) :
-                                        '',
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  )),
-                                  DataCell(Row(
-                                    children: [
-                                      IconButton(
-                                        onPressed: () => _showForm(customer),
-                                        icon: const Icon(
-                                          Icons.edit,
-                                          color: Colors.blue,
-                                        ),
-                                        tooltip: t.edit,
-                                      ),
-                                      IconButton(
-                                        onPressed: () => _markItem(customer.id),
-                                        icon: const Icon(
-                                          Icons.download_done,
-                                          color: Colors.green,
-                                        ),
-                                        tooltip: t.engagementMark,
-                                      ),
-                                      IconButton(
-                                        onPressed: () => _deleteItem(customer.id),
-                                        icon: const Icon(
-                                          Icons.delete_forever,
-                                          color: Colors.red,
-                                        ),
-                                        tooltip: t.delete,
-                                      ),
-                                    ]
-                                  )),
-                                ])).toList())
-                            )
+                      stream: snapshot.data,
+                      builder: (context, snapshot) {
+                        var customers = snapshot.data;
+                        if (customers != null && customers.isNotEmpty) {
+                          return SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: FittedBox(
+                                  child: DataTable(
+                                      sortColumnIndex: _currentSortColumn,
+                                      sortAscending: _isSortAsc,
+                                      columns: [
+                                        DataColumn(label: Text(t.owner)),
+                                        DataColumn(label: Text(t.address)),
+                                        DataColumn(label: Text(t.model)),
+                                        DataColumn(label: Text(t.number)),
+                                        DataColumn(
+                                            label: Text(t.registeredCode)),
+                                        DataColumn(label: Text(t.lastMark)),
+                                        DataColumn(label: Text(t.lastDeadline)),
+                                        DataColumn(label: Text(t.deadline)),
+                                        DataColumn(label: Text(t.actions)),
+                                      ],
+                                      rows: customers
+                                          .map((customer) => DataRow(cells: [
+                                                DataCell(Text(
+                                                  customer.owner,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                )),
+                                                DataCell(
+                                                    Text(customer.address)),
+                                                DataCell(Text(customer.model)),
+                                                DataCell(Text(customer.number)),
+                                                DataCell(Text(
+                                                    customer.registeredCode)),
+                                                DataCell(Text(customer
+                                                            .lastMark !=
+                                                        null
+                                                    ? DateFormat('dd/MM/yyyy')
+                                                        .format(
+                                                            customer.lastMark!)
+                                                    : '')),
+                                                DataCell(Text(customer
+                                                            .lastDeadline !=
+                                                        null
+                                                    ? DateFormat('dd/MM/yyyy')
+                                                        .format(customer
+                                                            .lastDeadline!)
+                                                    : '')),
+                                                DataCell(Text(
+                                                  customer.deadline != null
+                                                      ? DateFormat('dd/MM/yyyy')
+                                                          .format(
+                                                              customer.deadline)
+                                                      : '',
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                )),
+                                                DataCell(Row(children: [
+                                                  IconButton(
+                                                    onPressed: () =>
+                                                        _showForm(customer),
+                                                    icon: const Icon(
+                                                      Icons.edit,
+                                                      color: Colors.blue,
+                                                    ),
+                                                    tooltip: t.edit,
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () =>
+                                                        _markItem(customer),
+                                                    icon: const Icon(
+                                                      Icons.download_done,
+                                                      color: Colors.green,
+                                                    ),
+                                                    tooltip: t.engagementMark,
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () =>
+                                                        _deleteItem(
+                                                            customer.id),
+                                                    icon: const Icon(
+                                                      Icons.delete_forever,
+                                                      color: Colors.red,
+                                                    ),
+                                                    tooltip: t.delete,
+                                                  ),
+                                                ])),
+                                              ]))
+                                          .toList())));
+                        }
+                        return Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            t.noData,
+                            style: const TextStyle(fontSize: 18.0),
+                          ),
                         );
-                      }
-                      return const Text('no data');
-                    }
-                  );
+                      });
                 }
-                return const Text('no data');
+                return Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    t.noData,
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                );
               }),
         ),
       ),
