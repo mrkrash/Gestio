@@ -19,11 +19,9 @@
 
 import 'package:cbl/cbl.dart';
 import 'package:gestio/domain/customer/Customer.dart';
+import 'package:gestio/infrastructure/services/db/DatabaseHelper.dart';
 
 class CustomerRepository {
-  final Database _database;
-
-  CustomerRepository(this._database);
 
   Future<Customer> createCustomer(
       String firstname, String lastname, String address, String? phone) async {
@@ -35,25 +33,25 @@ class CustomerRepository {
       'address': address,
       'phone': phone,
     });
-    await _database.saveDocument(document);
+    await DatabaseHelper.instance.database!.saveDocument(document);
     return Customer(document);
   }
 
   Future<bool> updateCustomer(String id, String firstname, String lastname,
       String address, String? phone) async {
-    final doc = await _database.document(id);
+    final doc = await DatabaseHelper.instance.database!.document(id);
     final mutableDoc = doc!.toMutable();
 
     mutableDoc.setValue(firstname, key: 'firstname');
     mutableDoc.setValue(lastname, key: 'lastname');
     mutableDoc.setValue(address, key: 'address');
     mutableDoc.setValue(phone, key: 'phone');
-    return await _database.saveDocument(mutableDoc);
+    return await DatabaseHelper.instance.database!.saveDocument(mutableDoc);
   }
 
   Future<bool> deleteCustomer(String id) async {
-    final doc = await _database.document(id);
-    return await _database.deleteDocument(doc!);
+    final doc = await DatabaseHelper.instance.database!.document(id);
+    return await DatabaseHelper.instance.database!.deleteDocument(doc!);
   }
 
   Stream<List<Customer>> allCustomerStream() {
@@ -66,7 +64,7 @@ class CustomerRepository {
           SelectResult.property('address'),
           SelectResult.property('phone'),
         )
-        .from(DataSource.database(_database))
+        .from(DataSource.database(DatabaseHelper.instance.database!))
         .where(
           Expression.property('type').equalTo(Expression.value('customer')),
         )

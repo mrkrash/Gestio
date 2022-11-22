@@ -19,7 +19,7 @@
 
 import 'package:cbl/cbl.dart';
 import 'package:gestio/infrastructure/services/db/DatabaseHelper.dart';
-import '../../domain/setting/Setting.dart';
+import 'package:gestio/domain/setting/Setting.dart';
 
 class SettingRepository {
   Future<Setting> update(String id, String value) async {
@@ -46,5 +46,10 @@ class SettingRepository {
     var rAll = await resultSet.allResults();
 
     return Setting(rAll.first);
+  }
+
+  Future<String> getValue(String key) async {
+    var setting = await get(key);
+    return setting.value;
   }
 }

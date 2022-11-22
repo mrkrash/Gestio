@@ -20,8 +20,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:settings_ui/settings_ui.dart';
-import '../../../domain/setting/Setting.dart';
-import '../../../infrastructure/repositories/SettingRepository.dart';
+import 'package:gestio/domain/setting/Setting.dart';
+import 'package:gestio/infrastructure/repositories/SettingRepository.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);

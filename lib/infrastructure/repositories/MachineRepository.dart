@@ -18,25 +18,25 @@
  */
 
 import 'package:cbl/cbl.dart';
-
-import '../../domain/machine/Machine.dart';
+import 'package:gestio/domain/machine/Machine.dart';
+import 'package:gestio/infrastructure/services/db/DatabaseHelper.dart';
+import 'SettingRepository.dart';
 
 class MachineRepository {
-  static const yearMark = 4;
-  static const yearDeadline = 2;
 
-  final Database _database;
-  MachineRepository(this._database);
-
-  DateTime _deadline(
+  Future<DateTime> _deadline(
       DateTime? deadline,
       DateTime? lastMark,
-      DateTime? lastDeadline) {
+      DateTime? lastDeadline) async {
     if (deadline != null) {
       return deadline;
     }
-    var _lastMark = lastMark?.add(const Duration(days: 365 * yearMark));
-    var _lastDeadline = lastDeadline?.add(const Duration(days: 365 * yearDeadline));
+    final SettingRepository settingRepository = SettingRepository();
+    var yearDeadline = int.parse(await settingRepository.getValue('yearDeadline'));
+    var yearMark = int.parse(await settingRepository.getValue('yearMark'));
+
+    var _lastMark = lastMark?.add(Duration(days: 365 * yearMark));
+    var _lastDeadline = lastDeadline?.add(Duration(days: 365 * yearDeadline));
     if (_lastMark != null && _lastDeadline != null) {
       if (_lastMark.isAfter(_lastDeadline)) {
         return _lastDeadline;
@@ -58,6 +58,7 @@ class MachineRepository {
       String? registeredCode, DateTime? lastMark, DateTime? lastDeadline,
       DateTime? deadline
       ) async {
+    final newDeadline = await _deadline(null, null, deadline);
     final document = MutableDocument({
       'type': 'machine',
       'createdAt': DateTime.now(),
@@ -68,17 +69,28 @@ class MachineRepository {
       'registeredCode': registeredCode,
       'lastMark': lastMark,
       'lastDeadline': lastDeadline,
-      'deadline': _deadline(deadline, lastMark, lastDeadline),
+      'deadline': newDeadline,
     });
-    await _database.saveDocument(document);
+    await DatabaseHelper.instance.database!.saveDocument(document);
     return Machine(document);
+  }
+
+  Future<bool> updateDeadline(String id, DateTime deadline) async {
+    final doc = await DatabaseHelper.instance.database!.document(id);
+    final mutableDoc = doc!.toMutable();
+    final newDeadline = await _deadline(null, null, deadline);
+    mutableDoc.setValue(deadline, key: 'lastDeadline');
+    mutableDoc.setValue(newDeadline, key: 'deadline');
+
+    return await DatabaseHelper.instance.database!.saveDocument(mutableDoc);
   }
 
   Future<bool> updateMachine(String id, String owner, String model, String fluel,
       String? number, String? registeredCode, DateTime? lastMark,
       DateTime? lastDeadline, DateTime? deadline) async {
-    final doc = await _database.document(id);
+    final doc = await DatabaseHelper.instance.database!.document(id);
     final mutableDoc = doc!.toMutable();
+    final newDeadline = await _deadline(null, null, deadline);
 
     mutableDoc.setValue(owner, key: 'owner');
     mutableDoc.setValue(model, key: 'model');
@@ -87,7 +99,7 @@ class MachineRepository {
     mutableDoc.setValue(registeredCode, key: 'registeredCode');
     mutableDoc.setValue(lastMark, key: 'lastMark');
     mutableDoc.setValue(lastDeadline, key: 'lastDeadline');
-    mutableDoc.setValue(_deadline(deadline, lastMark, lastDeadline), key: 'deadline');
-    return await _database.saveDocument(mutableDoc);
+    mutableDoc.setValue(newDeadline, key: 'deadline');
+    return await DatabaseHelper.instance.database!.saveDocument(mutableDoc);
   }
 }
