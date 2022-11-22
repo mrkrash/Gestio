@@ -313,12 +313,32 @@ class _EngagementScreenState extends State<EngagementScreen> {
         _registeredCodeController.text, _lastMark, _lastDeadline, _deadline);
   }
 
-  void _deleteItem(String id) async {
-    await _customerRepository.deleteCustomer(id);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Successfully deleted a journal!'),
-    ));
-  }
+  void _markItem(String id) {}
+
+  void _deleteItem(String id) => showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(t.deleteAlertTitle),
+        content: Text(t.deleteAlertDescription),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, t.cancel),
+              child: Text(t.cancel)
+          ),
+          TextButton(
+              onPressed: () async
+              {
+                await _customerRepository.deleteCustomer(id);
+                Navigator.pop(context, t.cancel);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Successfully deleted a journal!'),
+                ));
+              },
+              child: Text(t.delete)
+          ),
+        ],
+      ),
+  );
 
   @override
   void initState() {
@@ -428,7 +448,10 @@ class _EngagementScreenState extends State<EngagementScreen> {
                                 ],
                                 rows: customers
                                     .map((customer) => DataRow(cells: [
-                                  DataCell(Text(customer.owner)),
+                                  DataCell(Text(
+                                    customer.owner,
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  )),
                                   DataCell(Text(customer.address)),
                                   DataCell(Text(customer.model)),
                                   DataCell(Text(customer.number)),
@@ -444,13 +467,38 @@ class _EngagementScreenState extends State<EngagementScreen> {
                                       ''
                                   )),
                                   DataCell(Text(
-                                      customer.deadline != null ?
-                                      DateFormat('dd/MM/yyyy').format(customer.deadline) :
-                                      ''
+                                    customer.deadline != null ?
+                                        DateFormat('dd/MM/yyyy').format(customer.deadline) :
+                                        '',
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
                                   )),
-                                  DataCell(IconButton(
-                                    onPressed: () => _showForm(customer),
-                                    icon: const Icon(Icons.edit),
+                                  DataCell(Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () => _showForm(customer),
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.blue,
+                                        ),
+                                        tooltip: t.edit,
+                                      ),
+                                      IconButton(
+                                        onPressed: () => _markItem(customer.id),
+                                        icon: const Icon(
+                                          Icons.download_done,
+                                          color: Colors.green,
+                                        ),
+                                        tooltip: t.engagementMark,
+                                      ),
+                                      IconButton(
+                                        onPressed: () => _deleteItem(customer.id),
+                                        icon: const Icon(
+                                          Icons.delete_forever,
+                                          color: Colors.red,
+                                        ),
+                                        tooltip: t.delete,
+                                      ),
+                                    ]
                                   )),
                                 ])).toList())
                             )
