@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(
-          primarySwatch: Colors.orange,
+          primarySwatch: Colors.indigo,
         ),
         home: const EngagementScreen());
   }
