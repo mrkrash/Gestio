@@ -58,7 +58,7 @@ class MachineRepository {
       String? registeredCode, DateTime? lastMark, DateTime? lastDeadline,
       DateTime? deadline
       ) async {
-    final newDeadline = await _deadline(null, null, deadline);
+    final newDeadline = await _deadline(deadline, lastMark, lastDeadline);
     final document = MutableDocument({
       'type': 'machine',
       'createdAt': DateTime.now(),
